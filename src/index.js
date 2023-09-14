@@ -109,22 +109,25 @@ window.Webflow.push(() => {
       });
     });
     const resetNavbarColor = function () {
-      const navbarResetColor = section.getAttribute('[cr-split-navbar-color]');
+      const navbarResetColor = section.getAttribute('cr-split-navbar-color');
+      console.log(navbarResetColor);
       if (!navbarResetColor) return;
       navbar.setAttribute('section-mode', navbarResetColor);
     };
     const navbarResetTL = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: 'top center',
+        start: 'top top',
         end: 'bottom center',
         scrub: 1,
         onEnter: () => {},
         onLeave: () => {
+          console.log('leave');
           resetNavbarColor();
         },
         onEnterBack: () => {},
         onLeaveBack: () => {
+          console.log('leave back');
           resetNavbarColor();
         },
       },
