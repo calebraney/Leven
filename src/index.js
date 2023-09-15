@@ -27,6 +27,9 @@ window.Webflow.push(() => {
         onEnter: () => {
           navbarBg.classList.remove('is-active');
         },
+        onEnterBack: () => {
+          navbarBg.classList.remove('is-active');
+        },
         onLeave: () => {
           navbarBg.classList.add('is-active');
         },
@@ -138,21 +141,6 @@ window.Webflow.push(() => {
         },
       });
     });
-    // set navbar to match each item
-    // const navbarResetTL = gsap.timeline({
-    //   scrollTrigger: {
-    //     trigger: section,
-    //     start: 'top top',
-    //     end: 'bottom center',
-    //     scrub: 1,
-    //     onLeave: () => {
-    //       transferColorMode(section, navbar, 'cr-split-navbar-color');
-    //     },
-    //     onLeaveBack: () => {
-    //       transferColorMode(section, navbar, 'cr-split-navbar-color');
-    //     },
-    //   },
-    // });
   }
 
   // const gsapInit = function () {
