@@ -7,6 +7,19 @@ window.Webflow.push(() => {
   gsap.registerPlugin(ScrollTrigger);
   gsap.registerPlugin(Flip);
 
+  // checks an element to see if it has a valid color mode and sets the same color mode on another element
+  const transferColorMode = function (
+    inputEl,
+    updateEl,
+    attribute = 'section-mode',
+    validModes = ['1', '2', '3', '4']
+  ) {
+    const colorMode = inputEl.getAttribute(attribute);
+    if (validModes.includes(colorMode)) {
+      updateEl.setAttribute('section-mode', colorMode);
+    }
+  };
+
   const setNavbar = function () {
     const navbar = document.querySelector('[navbar-bg]');
     if (!navbar) return;
@@ -78,7 +91,7 @@ window.Webflow.push(() => {
           trigger: item,
           start: 'top center',
           end: 'bottom center',
-          scrub: 1,
+          scrub: 1,u
           onEnter: () => {
             image.classList.add(ACTIVE_CLASS_IMAGE);
             tab.classList.add(ACTIVE_CLASS_TAB);
@@ -108,12 +121,7 @@ window.Webflow.push(() => {
         },
       });
     });
-    const resetNavbarColor = function () {
-      const navbarResetColor = section.getAttribute('cr-split-navbar-color');
-      console.log(navbarResetColor);
-      if (!navbarResetColor) return;
-      navbar.setAttribute('section-mode', navbarResetColor);
-    };
+
     const navbarResetTL = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -123,15 +131,17 @@ window.Webflow.push(() => {
         onEnter: () => {},
         onLeave: () => {
           console.log('leave');
-          resetNavbarColor();
+          transferColorMode(section, navbar);
         },
         onEnterBack: () => {},
         onLeaveBack: () => {
           console.log('leave back');
-          resetNavbarColor();
+          transferColorMode(section, navbar);
         },
       },
     });
   }
   solutionsScroll();
+
+  const setNavbarToSection = function () {};
 });
