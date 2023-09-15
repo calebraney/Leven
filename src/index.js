@@ -38,7 +38,7 @@ window.Webflow.push(() => {
   };
 
   const matchSectionNavColor = function (isMobile) {
-    const sections = document.querySelectorAll(':is(section, [update-nav-mode])');
+    const sections = document.querySelectorAll(':is(section, footer, [update-nav-mode])');
     let MatchColors = attr(true, navbar.getAttribute('match-section-color'));
     console.log(MatchColors);
     if (!MatchColors) return;
