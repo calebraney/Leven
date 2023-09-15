@@ -1,42 +1,65 @@
+import { attr } from './utilities';
+import { transferColorMode } from './utilities';
+
 // Webflow is initialized
 window.Webflow ||= [];
 window.Webflow.push(() => {
+  // global selectors
+  const navbar = document.querySelector('[navbar]');
+  const pageWrap = document.querySelector('.page_wrap');
+
   // Run code once webflow is initialized
   console.log('hello webflow');
 
   gsap.registerPlugin(ScrollTrigger);
   gsap.registerPlugin(Flip);
+  let mm = gsap.matchMedia();
 
-  // checks an element to see if it has a valid color mode and sets the same color mode on another element
-  const transferColorMode = function (
-    inputEl,
-    updateEl,
-    attribute = 'section-mode',
-    validModes = ['1', '2', '3', '4']
-  ) {
-    const colorMode = inputEl.getAttribute(attribute);
-    if (validModes.includes(colorMode)) {
-      updateEl.setAttribute('section-mode', colorMode);
-    }
-  };
-
-  const setNavbar = function () {
-    const navbar = document.querySelector('[navbar-bg]');
-    if (!navbar) return;
-    document.addEventListener('scroll', (event) => {
-      if (window.scrollY !== 0) {
-        navbar.classList.add('is-active');
-      }
-      if (window.scrollY === 0) {
-        navbar.classList.remove('is-active');
-      }
+  const moveNavbarBg = function () {
+    const navbarBg = document.querySelector('[navbar-bg]');
+    if (!navbarBg) return;
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: pageWrap,
+        start: 'top top',
+        end: '1px top',
+        scrub: 0.2,
+        onEnter: () => {
+          navbarBg.classList.remove('is-active');
+        },
+        onLeave: () => {
+          navbarBg.classList.add('is-active');
+        },
+      },
     });
   };
-  setNavbar();
+
+  const matchSectionNavColor = function (isMobile) {
+    const sections = document.querySelectorAll(':is(section, [update-nav-mode])');
+    let MatchColors = attr(true, navbar.getAttribute('match-section-color'));
+    console.log(MatchColors);
+    if (!MatchColors) return;
+    sections.forEach((section) => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: isMobile ? 'top 5rem' : 'top 4.5rem',
+          end: isMobile ? 'bottom 5rem' : 'bottom 4.5rem',
+          scrub: 0.2,
+          onEnter: () => {
+            transferColorMode(section, navbar);
+          },
+          onEnterBack: () => {
+            transferColorMode(section, navbar);
+          },
+        },
+      });
+    });
+  };
 
   const updateProjectColors = function () {
     // Get all div elements with the attribute 'work-item'
-    const workItems = document.querySelectorAll('[work-item]');
+    const workItems = document.querySelectorAll('[work-item="preview"]');
     // Loop through the work items and update the 'color-mode' attribute
     workItems.forEach((item, index) => {
       if (!item) return;
@@ -47,7 +70,6 @@ window.Webflow.push(() => {
       item.setAttribute('section-mode', colorMode.toString());
     });
   };
-  updateProjectColors();
 
   function solutionsScroll() {
     const tabLinks = document.querySelectorAll('[cr-split-link]');
@@ -55,11 +77,8 @@ window.Webflow.push(() => {
     const processImages = document.querySelectorAll('[cr-split-image]');
     const processTabs = document.querySelectorAll('[cr-split-tab]');
     const section = document.querySelector('[cr-split-wrap]');
-    const navbar = document.querySelector('[navbar]');
     const ACTIVE_CLASS_IMAGE = 'is-active';
     const ACTIVE_CLASS_TAB = 'em0-2';
-    console.log(processImages);
-
     // for each tab link add an event listener that will scroll to the correct id
     tabLinks.forEach((button) => {
       button.addEventListener('click', (e) => {
@@ -76,14 +95,12 @@ window.Webflow.push(() => {
         });
       });
     });
-
     // remove all active classes
     processImages.forEach((item) => item.classList.remove(ACTIVE_CLASS_IMAGE));
     //set first item to be active
     processImages[0].classList.add(ACTIVE_CLASS_IMAGE);
     // animate each item
     processItems.forEach((item, index) => {
-      const colorMode = item.getAttribute('cr-color-mode');
       const image = processImages[index];
       const tab = processTabs[index];
       const imageTL = gsap.timeline({
@@ -91,12 +108,12 @@ window.Webflow.push(() => {
           trigger: item,
           start: 'top center',
           end: 'bottom center',
-          scrub: 1,u
+          scrub: 1,
           onEnter: () => {
             image.classList.add(ACTIVE_CLASS_IMAGE);
             tab.classList.add(ACTIVE_CLASS_TAB);
-            section.setAttribute('section-mode', colorMode);
-            navbar.setAttribute('section-mode', colorMode);
+            transferColorMode(item, section, 'cr-color-mode');
+            transferColorMode(item, navbar, 'cr-color-mode');
           },
           onLeave: () => {
             // don't remove class on leave of the last item
@@ -108,8 +125,8 @@ window.Webflow.push(() => {
           onEnterBack: () => {
             image.classList.add(ACTIVE_CLASS_IMAGE);
             tab.classList.add(ACTIVE_CLASS_TAB);
-            section.setAttribute('section-mode', colorMode);
-            navbar.setAttribute('section-mode', colorMode);
+            transferColorMode(item, section, 'cr-color-mode');
+            transferColorMode(item, navbar, 'cr-color-mode');
           },
           onLeaveBack: () => {
             // don't remove class on leaveback of the first item
@@ -121,27 +138,43 @@ window.Webflow.push(() => {
         },
       });
     });
-
-    const navbarResetTL = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: 'bottom center',
-        scrub: 1,
-        onEnter: () => {},
-        onLeave: () => {
-          console.log('leave');
-          transferColorMode(section, navbar);
-        },
-        onEnterBack: () => {},
-        onLeaveBack: () => {
-          console.log('leave back');
-          transferColorMode(section, navbar);
-        },
-      },
-    });
+    // set navbar to match each item
+    // const navbarResetTL = gsap.timeline({
+    //   scrollTrigger: {
+    //     trigger: section,
+    //     start: 'top top',
+    //     end: 'bottom center',
+    //     scrub: 1,
+    //     onLeave: () => {
+    //       transferColorMode(section, navbar, 'cr-split-navbar-color');
+    //     },
+    //     onLeaveBack: () => {
+    //       transferColorMode(section, navbar, 'cr-split-navbar-color');
+    //     },
+    //   },
+    // });
   }
-  solutionsScroll();
 
-  const setNavbarToSection = function () {};
+  // const gsapInit = function () {
+  mm.add(
+    {
+      //This is the conditions object
+      isMobile: '(max-width: 767px)',
+      isTablet: '(min-width: 768px)  and (max-width: 991px)',
+      isDesktop: '(min-width: 992px)',
+      reduceMotion: '(prefers-reduced-motion: reduce)',
+    },
+    (context) => {
+      let { isMobile, isTablet, isDesktop, reduceMotion } = context.conditions;
+      updateProjectColors();
+      moveNavbarBg();
+      matchSectionNavColor(isMobile);
+      solutionsScroll();
+      //Run if reduce motion is off
+      if (!reduceMotion) {
+      }
+    }
+  );
+  // };
+  // gsapInit();
 });
