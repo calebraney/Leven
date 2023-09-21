@@ -8,9 +8,6 @@ window.Webflow.push(() => {
   const navbar = document.querySelector('[navbar]');
   const pageWrap = document.querySelector('.page_wrap');
 
-  // Run code once webflow is initialized
-  console.log('hello webflow');
-
   gsap.registerPlugin(ScrollTrigger);
   gsap.registerPlugin(Flip);
   let mm = gsap.matchMedia();
@@ -40,7 +37,6 @@ window.Webflow.push(() => {
   const matchSectionNavColor = function (isMobile) {
     const sections = document.querySelectorAll(':is(section, footer, [update-nav-mode])');
     let MatchColors = attr(true, navbar.getAttribute('match-section-color'));
-    console.log(MatchColors);
     if (!MatchColors) return;
     sections.forEach((section) => {
       const tl = gsap.timeline({
