@@ -74,6 +74,20 @@ window.Webflow.push(() => {
     });
   };
 
+  const clearFiltersOnClick = function () {
+    const ACTIVE_CLASS = 'em0-2';
+    const clearBtn = document.querySelector('[fs-cmsfilter-element="clear"]');
+    const form = document.querySelector('[fs-cmsfilter-element="filters"]');
+    const filters = form.querySelectorAll('[class*="em0-1"]');
+    if (!clearBtn || !form) return;
+    clearBtn.addEventListener('click', (e) => {
+      filters.forEach((item) => {
+        if (!item || !item.classList.contains(ACTIVE_CLASS)) return;
+        item.classList.remove(ACTIVE_CLASS);
+      });
+    });
+  };
+
   function solutionsScroll() {
     const tabLinks = document.querySelectorAll('[cr-split-link]');
     const processItems = document.querySelectorAll('[cr-split-content]');
@@ -154,6 +168,7 @@ window.Webflow.push(() => {
     },
     (context) => {
       let { isMobile, isTablet, isDesktop, reduceMotion } = context.conditions;
+      clearFiltersOnClick();
       updateProjectColors();
       moveNavbarBg();
       matchSectionNavColor(isMobile);
