@@ -14,7 +14,7 @@ window.Webflow.push(() => {
 
   const moveNavbarBg = function () {
     const navbarBg = document.querySelector('[navbar-bg]');
-    if (!navbarBg) return;
+    if (!navbarBg || !pageWrap) return;
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: pageWrap,
@@ -35,7 +35,7 @@ window.Webflow.push(() => {
   };
 
   const matchSectionNavColor = function (isMobile) {
-    const sections = document.querySelectorAll(':is(section, footer, [update-nav-mode])');
+    const sections = gsap.utils.toArray(':is(section, footer, [update-nav-mode])');
     let MatchColors = attr(true, navbar.getAttribute('match-section-color'));
     if (!MatchColors) return;
     sections.forEach((section) => {
@@ -58,7 +58,7 @@ window.Webflow.push(() => {
 
   const updateProjectColors = function () {
     // Get all div elements with the attribute 'work-item'
-    const workItems = document.querySelectorAll('[work-item="preview"]');
+    const workItems = gsap.utils.toArray('[work-item="preview"]');
     // Loop through the work items and update the 'color-mode' attribute
     workItems.forEach((item, index) => {
       if (!item) return;
@@ -74,8 +74,8 @@ window.Webflow.push(() => {
     const ACTIVE_CLASS = 'em0-2';
     const clearBtn = document.querySelector('[fs-cmsfilter-element="clear"]');
     const form = document.querySelector('[fs-cmsfilter-element="filters"]');
-    const filters = form.querySelectorAll('[class*="em0-1"]');
     if (!clearBtn || !form) return;
+    const filters = form.querySelectorAll('[class*="em0-1"]');
     clearBtn.addEventListener('click', (e) => {
       filters.forEach((item) => {
         if (!item || !item.classList.contains(ACTIVE_CLASS)) return;
@@ -85,15 +85,17 @@ window.Webflow.push(() => {
   };
 
   function solutionsScroll() {
-    const tabLinks = document.querySelectorAll('[cr-split-link]');
-    const processItems = document.querySelectorAll('[cr-split-content]');
-    const processImages = document.querySelectorAll('[cr-split-image]');
-    const processTabs = document.querySelectorAll('[cr-split-tab]');
+    const tabLinks = gsap.utils.toArray('[cr-split-link]');
+    const processItems = gsap.utils.toArray('[cr-split-content]');
+    const processImages = gsap.utils.toArray('[cr-split-image]');
+    const processTabs = gsap.utils.toArray('[cr-split-tab]');
     const section = document.querySelector('[cr-split-wrap]');
     const ACTIVE_CLASS_IMAGE = 'is-active';
     const ACTIVE_CLASS_TAB = 'em0-2';
     // for each tab link add an event listener that will scroll to the correct id
+    if (tabLinks.length === 0 || processItems.length === 0 || processImages.length === 0) return;
     tabLinks.forEach((button) => {
+      if (!button) return;
       button.addEventListener('click', (e) => {
         e.preventDefault();
         const clicked = e.target.closest('[cr-split-link]');
@@ -116,6 +118,7 @@ window.Webflow.push(() => {
     processItems.forEach((item, index) => {
       const image = processImages[index];
       const tab = processTabs[index];
+      if (!item || !image || !tab) return;
       const imageTL = gsap.timeline({
         scrollTrigger: {
           trigger: item,
