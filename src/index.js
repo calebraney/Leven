@@ -4,13 +4,67 @@ import { transferColorMode } from './utilities';
 // Webflow is initialized
 window.Webflow ||= [];
 window.Webflow.push(() => {
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(Flip);
+  let mm = gsap.matchMedia();
+
   // global selectors
   const navbar = document.querySelector('[navbar]');
   const pageWrap = document.querySelector('.page_wrap');
 
-  gsap.registerPlugin(ScrollTrigger);
-  gsap.registerPlugin(Flip);
-  let mm = gsap.matchMedia();
+  const TRANSITION_DURATION = 0.3;
+
+  ///////////////////////////////
+  //Page Load Animation
+  const pageLoad = function () {
+    const loadWrap = document.querySelector('[load="component"]');
+    const loadRows = gsap.utils.toArray('[load="row"]');
+    const loadArrows = gsap.utils.toArray('[load="arrow"]');
+    //guard clause
+    if (!loadWrap || !loadRows.length === 0 || !loadArrows.length === 0) return;
+    const tl = gsap.timeline({
+      defaults: { duration: 0.6, ease: 'power2.out' },
+      delay: 0.3,
+      onComplete: () => {
+        gsap.set(loadWrap, { display: 'none' });
+      },
+    });
+    tl.set(loadWrap, { display: 'flex' });
+    loadRows.forEach((row, index) => {
+      const move = (index - 1) * 50;
+      tl.fromTo(
+        row,
+        {
+          yPercent: 0,
+        },
+        {
+          yPercent: move,
+        },
+        0
+      );
+    });
+    tl.fromTo(
+      loadArrows,
+      {
+        yPercent: 0,
+      },
+      {
+        yPercent: -120,
+      }
+    );
+    tl.fromTo(
+      loadWrap,
+      {
+        yPercent: 0,
+      },
+      {
+        yPercent: -120,
+        ease: 'power1.out',
+        duration: 0.8,
+      }
+    );
+  };
+  pageLoad();
 
   const moveNavbarBg = function () {
     const navbarBg = document.querySelector('[navbar-bg]');
